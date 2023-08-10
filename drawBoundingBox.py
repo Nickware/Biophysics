@@ -8,10 +8,11 @@ from random import randint
 # drawBoundingBox.py -- Draws a box surrounding a selection 
 #
 #                                                                            
-# AUTHOR: Jason Vertrees                                                   
+# AUTHOR: Jason Vertrees
 # DATE  : 2/20/2009                                                          
 # NOTES : See comments below.                                                
-#                                                                            
+# Implementation: Nicolas Torres 
+# Copyright: https://pymolwiki.org/index.php/DrawBoundingBox
 #############################################################################
 def drawBoundingBox(selection="(all)", padding=0.0, linewidth=2.0, r=1.0, g=1.0, b=1.0):     
         """                                                                  
