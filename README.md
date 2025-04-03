@@ -1,2 +1,2 @@
-# GenesisMolecular
-Pymol: Draw a box in the molecular structure.
+# Pymol from Python
+pymol scripts via python
