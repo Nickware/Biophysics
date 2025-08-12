@@ -1,4 +1,4 @@
-"""Example 4."""
+"""Coordinates and coordinate manipulations."""
 
 from Definitions import *
 
