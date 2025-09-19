@@ -22,13 +22,13 @@
 
 ## Características del script:
 
-- ✅ **Verificación del sistema**: Confirma que es Debian/Ubuntu
-- ✅ **Instalación automática**: Todas las dependencias del sistema
-- ✅ **Entorno virtual**: Aísla las dependencias Python
-- ✅ **Soporte CUDA opcional**: Parámetro `--with-cuda`
-- ✅ **Compilación optimizada**: Usa todos los cores disponibles (`nproc`)
-- ✅ **Verificación**: Confirma que la instalación fue exitosa
-- ✅ **Script de activación**: Crea un script fácil para usar el entorno
+- **Verificación del sistema**: Confirma que es Debian/Ubuntu
+- **Instalación automática**: Todas las dependencias del sistema
+- **Entorno virtual**: Aísla las dependencias Python
+- **Soporte CUDA opcional**: Parámetro `--with-cuda`
+- **Compilación optimizada**: Usa todos los cores disponibles (`nproc`)
+- **Verificación**: Confirma que la instalación fue exitosa
+- **Script de activación**: Crea un script fácil para usar el entorno
 
 ## Script de activación simplificado:
 
