@@ -72,9 +72,9 @@ with XTCWriter('trajectory.xtc', n_atoms=len(u.atoms)) as W:
 ```
 
 Este script:
-- Modificar las posiciones en cada paso.
-- Asignar un tiempo real (0, 100, 200, ..., 900 ps).
-- Guardar todo en formato `.xtc`.
+- Modifica las posiciones en cada paso.
+- Asigna un tiempo real (0, 100, 200, ..., 900 ps).
+- Guarda todo en formato `.xtc`.
 
 ---
 
@@ -165,16 +165,12 @@ python analyze_rmsd.py
 - El archivo `.gro` solo contiene estructura, no topología química completa.
 - El RMSD será pequeño porque el sistema es rígido y las fluctuaciones son suaves.
 - Si se usa `select_atoms('protein')` en este sistema, obtendrás 0 átomos → RMSD vacío.
-- Si no se observa gráficas, **guardar la figura con `plt.savefig()`** en lugar de confiar en `plt.show()`.
+- Si no se observan gráficas, **guardar la figura con `plt.savefig()`** en lugar de confiar en `plt.show()`.
 
 ---
 
-## Próximos pasos
+## Perspectivas
 
 - Usar una proteína real (como ubiquitina) con `pdb` y `xtc`.
 - Analizar RMSF, contacto entre residuos o estructura secundaria.
-- Integra con Jupyter Notebook para visualización interactiva.
-
----
-
-¡Listo! Ahora se tiene un entorno funcional para aprender análisis de dinámica molecular con Python.
+- Integrar con Jupyter Notebook para visualización interactiva.
