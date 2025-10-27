@@ -10,13 +10,14 @@ Este proyecto demuestra cómo usar **MDAnalysis** en Python para:
 Es ideal para aprender los fundamentos de MDAnalysis sin necesidad de simulaciones reales.
 
 ## Estructura del Proyecto
-
+```
 proyecto-md/
 ├── topology.gro        # Topología estructural (3 átomos)
 ├── trajectory.xtc      # Trayectoria simulada (10 frames)
 ├── analyze_rmsd.py     # Script principal de análisis
 ├── generate_trajectory.py  # Genera la trayectoria dummy
 └── rmsd_plot.png       # Salida del análisis
+```
 
 ## Paso 1: Crear una topología dummy (`topology.gro`)
 
