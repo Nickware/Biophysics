@@ -1,6 +1,14 @@
-# Metodología para realizar una simulación de la glucosa usando pDynamo 
+# Simulación de una estructura de glucosa en pDynamo usando mecánica molecular
 
-Metodología básica para realizar una simulación de la glucosa usando pDynamo desde la mecánica molecular clásica. Este proceso abarca desde la preparación inicial hasta la simulación y análisis:
+## Objetivos de la simulación de glucosa
+
+- **Estudiar la estructura molecular y conformaciones accesibles de la glucosa** desde la mecánica molecular clásica, para comprender su estabilidad y flexibilidad.
+- **Optimizar la geometría de la molécula y calcular su energía potencial**, identificando configuraciones de mínima energía.
+- **Analizar las interacciones moleculares** incluyendo enlaces covalentes, ángulos, fuerzas no enlazantes como van der Waals y electrostáticas.
+- **Ejecutar simulaciones de dinámica molecular** para observar el comportamiento dinámico, movilidad y posibles cambios conformacionales térmicos.
+- **Generar datos atómicos y energéticos** que permitan entender fenómenos biofísicos básicos y sirvan como insumos para estudios posteriores, así como validar modelos clásicos.
+
+A continuación se describe la metodología para realizar una simulación de la glucosa usando pDynamo desde la mecánica molecular clásica. Este proceso abarca desde la preparación inicial hasta la simulación y análisis:
 
 ## Metodología para simulación de glucosa en pDynamo
 
