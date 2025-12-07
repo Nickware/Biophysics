@@ -1,0 +1,41 @@
+# =====================================================
+# SIMULACIÓN MEZCLA GASES NOBLES - GAS IDEAL vs REAL
+# =====================================================
+units           lj
+atom_style      atomic
+boundary        p p p
+box             tilt large
+
+# Caja grande para baja densidad (~gas ideal)
+region          box block 0 40 0 40 0 40
+create_box      6 box
+
+# Crear 200 átomos por gas noble (1200 total)
+create_atoms    1 random 200 482017 box    # He
+create_atoms    2 random 200 372819 box    # Ne
+create_atoms    3 random 200 918273 box    # Ar
+create_atoms    4 random 200 645281 box    # Kr
+create_atoms    5 random 200 128736 box    # Xe
+create_atoms    6 random 200 549872 box    # Rn
+
+# Potenciales LJ reales (σ, ε/kB normalizados a Ar)
+pair_style      lj/cut 4.0
+pair_coeff      1 1 2.15 0.244     # He [web:43]
+pair_coeff      2 2 2.75 0.387     # Ne
+pair_coeff      3 3 3.40 1.000     # Ar (referencia)
+pair_coeff      4 4 3.65 1.681     # Kr
+pair_coeff      5 5 3.96 2.282     # Xe
+pair_coeff      6 6 4.38 3.757     # Rn
+
+# Termostato NVT (T=1.2 ε_Ar = ~120K)
+velocity        all create 1.2 49283 dist gaussian
+fix             1 all nvt temp 1.2 1.2 0.1
+
+# Dump cada 200 pasos (coordenadas + velocidades)
+dump            1 all custom 200 gases_nobles.dump id type x y z vx vy vz
+dump_modify     1 sort id
+
+thermo          1000
+thermo_style    custom step temp press vol density
+
+run             100000
