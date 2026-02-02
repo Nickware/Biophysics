@@ -1,6 +1,6 @@
-## **Análisis del Script: Gases Nobles como Modelo de Gas Ideal**
+# Gases Nobles como Modelo de Gas Ideal
 
-Este script es un **pipeline completo de análisis termodinámico** que combina **LAMMPS** (simulación) y **MDAnalysis** (análisis) para estudiar experimentalmente el **comportamiento de gas ideal** vs **desviaciones reales** en una mezcla de **todos los gases nobles** (He, Ne, Ar, Kr, Xe, Rn).
+Este ss un **pipeline completo de análisis termodinámico** que combina **LAMMPS** (simulación) y **MDAnalysis** (análisis) para estudiar experimentalmente el **comportamiento de gas ideal** vs **desviaciones reales** en una mezcla de **todos los gases nobles** (He, Ne, Ar, Kr, Xe, Rn).
 
 ## **Propósito Científico**
 
