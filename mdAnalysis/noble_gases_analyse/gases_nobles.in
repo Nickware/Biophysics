@@ -1,5 +1,5 @@
 # =====================================================
-# SIMULACIÓN MEZCLA GASES NOBLES - GAS IDEAL vs REAL
+# Simulación Mezcla Gases Nobles - Gas Ideal vs Real
 # =====================================================
 units           lj
 atom_style      atomic
