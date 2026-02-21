@@ -44,8 +44,6 @@ De esta forma, la biofísica computacional aprovecha estas plataformas para inve
 - [^12] ESPResSo » Extensible Simulation Package for the Research on Soft Matter.
 - [^14] MDAnalysis documentation — MDAnalysis 2.10.0-dev0.
 
-<div style="text-align: center">⁂</div>
-
 [^1]: https://universidadeuropea.com/blog/que-es-biofisica/
 
 [^2]: https://es.wikipedia.org/wiki/Biofísica
