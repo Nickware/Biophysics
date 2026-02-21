@@ -23,8 +23,6 @@ Aunque el código fuente es gratuito, los binarios oficiales requieren un patroc
 
 PyMOL es una herramienta esencial para investigadores en bioinformática, biología estructural y química computacional debido a su versatilidad y capacidad para producir visualizaciones detalladas y científicamente precisas.
 
-<div style="text-align: center">⁂</div>
-
 [^1]: https://es.wikipedia.org/wiki/PyMOL
 
 [^2]: https://www.youtube.com/watch?v=3QFz5g2iwqo
