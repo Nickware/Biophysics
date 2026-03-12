@@ -17,10 +17,6 @@ PyMOL es un software de visualización molecular ampliamente utilizado en biolog
 - **Análisis estructural**: Es útil para identificar propiedades físicas y químicas en estructuras moleculares[^8].
 
 
-## Acceso y versiones
-
-Aunque el código fuente es gratuito, los binarios oficiales requieren un patrocinio económico. La última versión estable es la 3.1.01, lanzada en febrero de 2025[^1].
-
 PyMOL es una herramienta esencial para investigadores en bioinformática, biología estructural y química computacional debido a su versatilidad y capacidad para producir visualizaciones detalladas y científicamente precisas.
 
 [^1]: https://es.wikipedia.org/wiki/PyMOL
