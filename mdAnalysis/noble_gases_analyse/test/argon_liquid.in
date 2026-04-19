@@ -1,0 +1,60 @@
+# =====================================================
+# LAMMPS: ARGÓN LÍQUIDO - RDF + MSD para MDAnalysis
+# =====================================================
+# Referencia: Rahman 1964 (Ar líquido ~86K, 0.84 g/cm³)
+
+units           lj              # Unidades reducidas (σ=3.4Å, ε/kB=120K)
+dimension       3
+boundary        p p p
+atom_style      atomic
+
+# Caja ~4.2σ x 4.2σ x 4.2σ (864 átomos Ar)
+lattice         fcc 0.95        # Densidad ~0.84 g/cm³
+region          box block 0 10 0 10 0 10
+create_box      1 box
+create_atoms    1 box
+
+# Potencial LJ Ar (σ=1.0, ε=1.0 en unidades LJ)
+pair_style      lj/cut 2.5
+pair_coeff      1 1 1.0 1.0    # Ar-Ar: ε/kB=119.8K, σ=3.405Å
+
+# Masa Ar (normalizada)
+mass            1 39.95
+
+# Inicializar velocidades T*=1.2 (~144K)
+velocity        all create 1.2 49287 dist gaussian
+
+# Termostato (NVT equilibración)
+fix             1 all nvt temp 1.2 1.2 0.05
+timestep        0.005          # 10 fs
+
+# Termodinámica cada 1000 pasos
+thermo          1000
+thermo_style    custom step temp press vol density etotal
+
+# Dump para MDAnalysis (formato CUSTOM = LAMMPSDUMP)
+dump            1 all custom 1000 argon_liquid.dump id type x y z vx vy vz
+dump_modify     1 sort id
+
+# =====================================================
+# EQUILIBRACIÓN NVT (50,000 pasos ~250 ps)
+# =====================================================
+neighbor        0.3 bin
+neigh_modify    delay 0 every 1 check yes
+
+run             50000
+
+# =====================================================
+# PRODUCCIÓN NVT (100,000 pasos ~500 ps)
+# =====================================================
+unfix           1
+fix             2 all nvt temp 0.72 0.72 0.05  # T*=0.72 ~86K
+run             100000
+
+# =====================================================
+# ARCHIVOS DE SALIDA
+# =====================================================
+write_data      argon_liquid.data
+write_dump      all atom argon_final.xyz
+
+print           "Simulación completada: RDF + MSD listos para MDAnalysis"
