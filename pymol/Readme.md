@@ -196,7 +196,7 @@ pDynamo (QC/MM) ←→
 Jupyter (Reporte)
 ```
 
-**PyMOL es el "Photoshop de la biología estructural"** - conecta todos los software y genera figuras profesionales con un solo comando. ¡Indispensable para publicaciones! 
+PyMOL es el Photoshop de la biología estructural - conecta todos los software y genera figuras profesionales con un solo comando. ¡Indispensable para publicaciones! 
 
 [^1]: https://es.wikipedia.org/wiki/PyMOL
 
