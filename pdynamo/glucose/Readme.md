@@ -2,11 +2,11 @@
 
 ## Objetivos de la simulación de glucosa
 
-- **Estudiar la estructura molecular y conformaciones accesibles de la glucosa** desde la mecánica molecular clásica, para comprender su estabilidad y flexibilidad.
-- **Optimizar la geometría de la molécula y calcular su energía potencial**, identificando configuraciones de mínima energía.
-- **Analizar las interacciones moleculares** incluyendo enlaces covalentes, ángulos, fuerzas no enlazantes como van der Waals y electrostáticas.
-- **Ejecutar simulaciones de dinámica molecular** para observar el comportamiento dinámico, movilidad y posibles cambios conformacionales térmicos.
-- **Generar datos atómicos y energéticos** que permitan entender fenómenos biofísicos básicos y sirvan como insumos para estudios posteriores, así como validar modelos clásicos.
+- Estudiar la estructura molecular y conformaciones accesibles de la glucosa desde la mecánica molecular clásica, para comprender su estabilidad y flexibilidad.
+- Optimizar la geometría de la molécula y calcular su energía potencial, identificando configuraciones de mínima energía.
+- Analizar las interacciones moleculares incluyendo enlaces covalentes, ángulos, fuerzas no enlazantes como van der Waals y electrostáticas.
+- Ejecutar simulaciones de dinámica molecular para observar el comportamiento dinámico, la movilidad y posibles cambios conformacionales térmicos.
+- Generar datos atómicos y energéticos que permitan entender fenómenos biofísicos básicos y sirvan como insumos para estudios posteriores, así como validar modelos clásicos.
 
 A continuación se describe la metodología para realizar una simulación de la glucosa usando pDynamo desde la mecánica molecular clásica. Este proceso abarca desde la preparación inicial hasta la simulación y análisis:
 
@@ -26,7 +26,7 @@ A continuación se describe la metodología para realizar una simulación de la 
 
 3. **Asignar el campo de fuerza**
 
-   - Seleccionar un campo de fuerza clásico adecuado para biomoléculas, por ejemplo OPLS-AA o AMBER.
+   - Seleccionar un campo de fuerza clásico adecuado para biomoléculas, por ejemplo, OPLS-AA o AMBER.
    - Definir el modelo de mecánica molecular para la molécula:
 
    ```
@@ -45,7 +45,7 @@ A continuación se describe la metodología para realizar una simulación de la 
 
 5. **Resumen e inspección inicial**
 
-   - Generar un resumen con datos básicos y revisa que todo esté definido correctamente.
+   - Generar un resumen con datos básicos y revisar que todo esté definido correctamente.
 
    ```
    pythonmolecule.Summary()
