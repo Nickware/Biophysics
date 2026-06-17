@@ -4,7 +4,7 @@ pDynamo es una biblioteca open-source diseñada para la simulación de sistemas 
 
 ### Características principales
 
-- Métodos QC: Permite simulaciones con teoría del funcional de la densidad (*DFT*), *Hartree-Fock* y métodos semiempíricos como AM1, MNDO, PM3 y RM1, usando bases gaussianas.
+- Métodos QC: Permiten simulaciones con teoría del funcional de la densidad (*DFT*), *Hartree-Fock* y métodos semiempíricos como AM1, MNDO, PM3 y RM1, usando bases gaussianas.
 - Mecánica Molecular: Soporta varios campos de fuerza estándar como AMBER, CHARMM y OPLS-AA.[^2]
 - Simulación híbrida QC/MM: Puede combinar (e incluso acoplar a software externo) métodos cuánticos y clásicos, ideal para estudiar reacciones químicas enzimáticas, catálisis o mutaciones.
 - Simulaciones dinámicas: Incorpora algoritmos avanzados para dinámica molecular y simulaciones de Monte Carlo, permitiendo explorar el comportamiento temporal de biomoléculas, sus interacciones y rutas de reacción.[^4][^1]
@@ -31,8 +31,6 @@ pDynamo se utiliza en investigaciones de biofísica para modelar y simular mecan
 pDynamo puede ser integrado en flujos de trabajo junto a herramientas como PyMOL (visualización), MDAnalysis (análisis de trayectorias) y otras plataformas computacionales, aportando capacidades avanzadas para simulaciones y análisis en biofísica computacional.[^1][^5]
 
 pDynamo es una potente y flexible plataforma para la simulación, análisis y modelado en química teórica y biofísica computacional, apta para investigaciones académicas y científicas avanzadas.
-
-<div style="text-align: center">⁂</div>
 
 [^1]: https://www.pdynamo.org
 
