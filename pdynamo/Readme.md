@@ -32,6 +32,63 @@ pDynamo puede ser integrado en flujos de trabajo junto a herramientas como PyMOL
 
 pDynamo es una potente y flexible plataforma para la simulación, análisis y modelado en química teórica y biofísica computacional, apta para investigaciones académicas y científicas avanzadas.
 
+Sí. Para **pDynamo3** en Ubuntu, la ruta más directa es instalar dependencias del sistema, clonar el repositorio y ejecutar su instalador desde el directorio `installation`. pDynamo3 requiere Python 3, Cython, PyYAML y un compilador C; la documentación oficial también indica configurar variables de entorno como `PDYNAMO3_HOME`, `PDYNAMO3_SCRATCH` y `PYTHONPATH`. [github](https://github.com/pdynamo/pDynamo3)
+
+## Instalación de pDynamo
+
+Instalación en distribuciones derivadas de debian
+
+### 1) Instalar dependencias
+```bash
+sudo apt update
+sudo apt install -y \
+  python3 python3-dev python3-pip \
+  cython3 python3-yaml \
+  gcc g++ git
+```
+pDynamo3 indica como requisitos mínimos Python 3.5+, Cython, PyYAML y un compilador C. [github](https://github.com/pdynamo/pDynamo3)
+
+### 2) Descargar pDynamo3
+```bash
+cd ~
+git clone https://github.com/dynamo.modeling/pdynamo3.git
+```
+La documentación del proyecto recomienda obtener la versión más reciente desde GitHub o desde su distribución oficial. [pdynamo](https://www.pdynamo.org/downloads)
+
+### 3) Compilar e instalar
+```bash
+cd ~/pdynamo3/installation
+python3 Install.py -f
+```
+El instalador oficial indica ejecutar `python3 Install.py -f` dentro de `installation` para compilar los módulos en C y Cython. [github](https://github.com/pdynamo/pDynamo3)
+
+### 4) Configurar variables de entorno
+Añade esto a tu `~/.bashrc`:
+```bash
+export PDYNAMO3_HOME=$HOME/pdynamo3
+export PDYNAMO3_SCRATCH=$PDYNAMO3_HOME/scratch
+export PYTHONPATH=.:$PDYNAMO3_HOME:$PYTHONPATH
+export PDYNAMO3_PARAMETERS=$PDYNAMO3_HOME/parameters
+export PDYNAMO3_PYTHONCOMMAND=python3
+export PDYNAMO3_STYLE=$PDYNAMO3_PARAMETERS/ccsStyleSheets/defaultStyle.css
+```
+Estas variables coinciden con las recomendadas por el proyecto para el funcionamiento básico. [github](https://github.com/pdynamo/pDynamo3)
+
+Luego recarga la configuración:
+```bash
+source ~/.bashrc
+```
+
+## Verificación rápida
+Puede probar que quedó instalado así:
+```bash
+python3 -c "import pDynamo"
+```
+Si no hay errores de importación, la instalación quedó lista. La documentación oficial de pDynamo3 espera que el entorno Python tenga acceso al árbol del proyecto mediante `PYTHONPATH`. [github](https://github.com/pdynamo/pDynamo3)
+
+## Recomendación práctica
+Para trabajar sin conflictos, conviene usar un entorno virtual o aislar la instalación en una carpeta propia, y mantener `PDYNAMO3_HOME` apuntando al directorio del código fuente. La documentación del proyecto insiste en que el ajuste de entorno es parte esencial de la instalación. [github](https://github.com/pdynamo/pDynamo3)
+
 [^1]: https://www.pdynamo.org
 
 [^2]: https://github.com/pdynamo/pDynamo3
