@@ -1,29 +1,38 @@
 """Coordinates and coordinate manipulations."""
 
 from Definitions import *
+import os
 
 # . Define the list of structures.
 xyzFiles = [ "glicina/gly-iin.xyz","glicina/gly-ip.xyz" ]
 
 # . Define a molecule.
 xyzFile  = xyzFiles.pop ( )
-molecule = XYZFile_ToSystem ( os.path.join ( xyzPath, xyzFile ) )
+molecule = ImportSystem ( os.path.join ( xyzPath, xyzFile ) )
 molecule.Summary ( )
 
 # . Translate the system to its center of mass.
-masses = molecule.atoms.GetItemAttributes ( "mass" )
+masses = Array.FromIterable ( [ atom.mass for atom in molecule.atoms ] )
 molecule.coordinates3.TranslateToCenter ( weights = masses )
 
 # . Calculate and print the inertia matrix before reorientation.
 inertia = molecule.coordinates3.InertiaMatrix ( weights = masses )
-inertia.Print ( title = "Inertia Matrix Before Reorientation" )
+labels  = [ "x", "y", "z" ]
+ArrayPrint2D ( inertia, columnLabels = labels   ,
+                        itemFormat   = "{:.3f}" ,
+                        rowLabels    = labels   ,
+                        title        = "Inertia Matrix Before Reorientation" )
 
 # . Transform to principal axes.
 molecule.coordinates3.ToPrincipalAxes ( weights = masses )
 
 # . Calculate and print the inertia matrix after reorientation.
+# . Calculate and print the inertia matrix after reorientation.
 inertia = molecule.coordinates3.InertiaMatrix ( weights = masses )
-inertia.Print ( title = "Inertia Matrix After Reorientation" )
+ArrayPrint2D ( inertia, columnLabels = labels   ,
+                        itemFormat   = "{:.3f}" ,
+                        rowLabels    = labels   ,
+                        title        = "Inertia Matrix After Reorientation" )
 
 # . Define a table for the results.
 table = logFile.GetTable ( columns = [ 20, 10, 10 ] )
@@ -35,11 +44,11 @@ table.Heading ( "After"     )
 
 # . Loop over the remaining structures.
 for xyzFile in xyzFiles:
-    coordinates3 = XYZFile_ToCoordinates3 ( os.path.join ( xyzPath, xyzFile ) )
-    rms0 = coordinates3.RMSDeviation ( molecule.coordinates3, weights = masses )
+    coordinates3 = ImportCoordinates3 ( os.path.join ( xyzPath, xyzFile ), log = None )
+    rms0 = coordinates3.RootMeanSquareDeviation ( molecule.coordinates3, weights = masses )
     coordinates3.Superimpose ( molecule.coordinates3, weights = masses )
-    rms1 = coordinates3.RMSDeviation ( molecule.coordinates3, weights = masses )
-    table.Entry ( xyzFile[0:-4], alignment = "l" )
+    rms1 = coordinates3.RootMeanSquareDeviation ( molecule.coordinates3, weights = masses )
+    table.Entry ( xyzFile[0:-4], align = Align.Left )
     table.Entry ( "{:.2f}".format ( rms0 ) )
     table.Entry ( "{:.2f}".format ( rms1 ) )
 
