@@ -1,170 +1,263 @@
-# ESPResSoMD
+# ESPResSo (espressomd)
 
-ESPResSo/expressomd es un software de simulación de dinámica molecular orientado a sistemas de **materia blanda** y coloides, muy usado en física, química y biofísica computacional para estudiar desde polímeros y suspensiones coloidales hasta modelos de membranas y biopolímeros. 
+ESPResSo (*Extensible Simulation Package for Research on Soft matter*) es un motor de dinámica molecular orientado a **materia blanda** y coloides, usado en física, química y biofísica computacional para estudiar polímeros, suspensiones coloidales, membranas y biopolímeros mediante representaciones coarse-grained.
 
-## Qué es ESPResSo / expressomd
+`espressomd` es el módulo de **Python** (nota: es "espressomd", una sola palabra — no "expressomd") que envuelve el núcleo en C++ del motor, permitiendo definir sistemas, parámetros, fuerzas y protocolos de simulación mediante scripts de alto nivel, integrados con NumPy y SciPy.
 
-- ESPResSo (Extensible Simulation Package for Research on Soft Matter) es un motor de dinámica molecular altamente extensible, optimizado para simulaciones a gran escala en CPU y GPU. Permite tratar interacciones de corto y largo alcance, hidrodinámica explícita o implícita y campos externos complejos.   
-- `expressomd` es la interfaz en **Python** que envuelve el núcleo de ESPResSo, de modo que se pueden definir sistemas, parámetros, fuerzas y protocolos de simulación mediante scripts de alto nivel, integrándolo fácilmente con NumPy, SciPy o herramientas de análisis. 
+## Tabla de contenidos
+
+- [Instalación](#instalación)
+- [Capacidades principales](#capacidades-principales)
+- [Construyendo un sistema: partículas y polímeros](#construyendo-un-sistema-partículas-y-polímeros)
+- [Integración con MDAnalysis (flujo correcto)](#integración-con-mdanalysis-flujo-correcto)
+- [Exportar a VMD/PyMOL (formato VTF)](#exportar-a-vmdpymol-formato-vtf)
+- [Integración con otro software de simulación](#integración-con-otro-software-de-simulación)
+- [Pipeline: simulación → análisis → visualización](#pipeline-simulación--análisis--visualización)
+- [Ventajas y limitaciones](#ventajas-y-limitaciones)
+- [Referencias](#referencias)
+
+## Instalación
+
+A diferencia de MDAnalysis o PyMOL, **ESPResSo no se instala con un simple `pip install`**: es un motor en C++ que se compila con CMake, porque muchas características (electrostática, GPU, métodos hidrodinámicos) se activan o desactivan en tiempo de compilación según el archivo `myconfig.hpp`.
+
+### Paso a paso en un contenedor Distrobox con Debian
+
+Esta ruta aísla toda la toolchain de compilación (Boost, FFTW, HDF5, etc.) dentro de un contenedor Debian, sin tocar el sistema anfitrión. Requiere tener **Distrobox** y un motor de contenedores (`podman` o `docker`) ya instalados en el host — eso sí corre en el sistema anfitrión, no dentro del contenedor:
+
+```bash
+# En el HOST: instalar distrobox si no lo tienes (ejemplo con el script oficial)
+curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/install | sh -s -- --prefix ~/.local
+```
+
+**1. Crear y entrar al contenedor Debian (trixie, la estable actual):**
+
+```bash
+distrobox create --name espresso-dev --image debian:trixie
+distrobox enter espresso-dev
+```
+
+A partir de aquí, todos los comandos se ejecutan **dentro** del contenedor `espresso-dev`.
+
+**2. Actualizar el índice de paquetes e instalar las dependencias de compilación:**
+
+```bash
+sudo apt update
+sudo apt install -y build-essential cmake cmake-curses-gui git \
+    python3-dev python3-venv python3-pip openmpi-bin \
+    libboost-all-dev libfftw3-dev libfftw3-mpi-dev \
+    libhdf5-dev libhdf5-openmpi-dev libgsl-dev freeglut3-dev
+```
+
+**3. Crear el entorno virtual de Python y las dependencias del lado Python:**
+
+```bash
+python3 -m venv ~/espresso_env
+source ~/espresso_env/bin/activate
+python3 -m pip install cython numpy scipy packaging setuptools h5py
+```
+
+**4. Clonar y compilar ESPResSo:**
+
+```bash
+git clone --depth=1 https://github.com/espressomd/espresso.git
+cd espresso
+mkdir build && cd build
+cmake ..
+make -j"$(nproc)"
+```
+
+**5. Verificar la instalación (todavía dentro del contenedor, dentro de `build/`):**
+
+```bash
+./pypresso -c "import espressomd; print(espressomd.features())"
+```
+
+Si ves una lista de features en lugar de un `ImportError`, la compilación fue exitosa. El script `pypresso` es el intérprete de Python que ESPResSo genera durante la compilación con las rutas del núcleo C++ ya configuradas; úsalo en vez de un `python3` genérico para correr tus scripts (`./pypresso mi_script.py`).
+
+**6. Para volver a entrar al contenedor en sesiones futuras (desde el host, sin recompilar):**
+
+```bash
+distrobox enter espresso-dev
+source ~/espresso_env/bin/activate
+cd espresso/build
+```
+
+**Dependencias de compilación (ejemplo Ubuntu 24.04, fuera de un contenedor):**
+
+```bash
+sudo apt install build-essential cmake cmake-curses-gui python3-dev openmpi-bin \
+    libboost-all-dev libfftw3-dev libfftw3-mpi-dev libhdf5-dev libhdf5-openmpi-dev \
+    python3-pip libgsl-dev freeglut3-dev
+```
+
+**Dependencias de Python (idealmente en un entorno virtual):**
+
+```bash
+python3 -m venv espresso_env
+source espresso_env/bin/activate
+python3 -m pip install cython numpy scipy packaging setuptools h5py
+```
+
+**Compilación:**
+
+```bash
+git clone --depth=1 https://github.com/espressomd/espresso.git
+cd espresso
+mkdir build && cd build
+cmake ..
+make -j$(nproc)
+```
+
+**Alternativas más rápidas para no compilar localmente:**
+- **Docker**: `ghcr.io/espressomd/docker/ubuntu:<tag>` trae una build ya compilada.
+- **GitHub Codespaces**: el repositorio oficial soporta compilación automática en la nube para quien tenga cuenta de GitHub.
+
+**Verificar la instalación** (desde el directorio `build`):
+
+```bash
+./pypresso -c "import espressomd; print(espressomd.features())"
+```
 
 ## Capacidades principales
 
-- Modelos **coarse-grained** para polímeros, membranas, surfactantes, coloides cargados y nanopartículas, típicos en materia blanda y biofísica.   
-- Soporte de **interacciones electrostáticas** (por ejemplo, Ewald, P3M), potenciales de Lennard-Jones, enlaces, ángulos, restricciones y campos externos (cizalla, flujos, campos eléctricos).   
-- Métodos hidrodinámicos como **Lattice-Boltzmann** o dinámica de Brown para incluir efectos de solvente efectivo, relevantes en dinámica de coloides y polímeros en solución. 
+- Modelos coarse-grained para polímeros, membranas, surfactantes, coloides cargados y nanopartículas.
+- Interacciones electrostáticas (Ewald, P3M), potenciales de Lennard-Jones, enlaces, ángulos, restricciones y campos externos (cizalla, flujos, campos eléctricos).
+- Métodos hidrodinámicos como Lattice-Boltzmann o dinámica browniana para incluir efectos de solvente efectivo.
 
-## Uso en biofísica
+## Construyendo un sistema: partículas y polímeros
 
-- Permite estudiar autoensamblaje de membranas, agregación de proteínas modelo, micelas, vesículas y transporte de partículas en medios complejos, donde los detalles atómicos se reemplazan por representaciones coarse-grained para alcanzar escalas de tamaño y tiempo grandes.   
-- Combinado con Python, es sencillo analizar trayectorias, exportar datos para herramientas como MDAnalysis o visualizar con otros programas, integrando simulación y análisis en un mismo flujo de trabajo.[5]
-
-## Ventajas prácticas
-
-- Alto rendimiento con paralelización (MPI, GPU) y diseño modular que facilita probar nuevos modelos o términos de fuerza personalizados.   
-- La interfaz de scripting en Python reduce la complejidad de archivos de entrada rígidos y permite construir experimentos numéricos “tipo laboratorio” con bucles, barridos de parámetros y análisis en línea.[8]
-
-## Integración de ESPResSo/expressomd con Otros Paquetes
-
-**ESPResSo** destaca por su **interfaz Python completa** (`import espressomd`) que lo hace altamente **interoperable** con el ecosistema científico de Python y otros software de simulación y análisis en biofísica.
-
-## **Integración Nativa con Python Científico**
-
-| Paquete | Uso típico | Ejemplo |
-|---------|------------|---------|
-| **NumPy** | Arrays de coordenadas, fuerzas | `positions = np.random.random((N,3))` |
-| **Matplotlib** | Visualización en tiempo real | `plt.plot(energy_history)` |
-| **SciPy** | Optimización parámetros | `scipy.optimize` para fitting |
-| **Pandas** | Análisis estadístico offline | `df = pd.DataFrame(traj_data)` |
-| **MDAnalysis** | Análisis avanzado trayectorias | Conversión VMD → Universe |
-
-## **1. MDAnalysis (Conversión de Trayectorias)**
+En ESPResSo **no existen clases de polímero que se añadan como "actor"** al sistema. Las partículas se agregan una a una (o mediante bucles/NumPy) con `system.part.add()`, y los enlaces se definen explícitamente:
 
 ```python
 import espressomd
-import MDAnalysis as mda
 import numpy as np
 
-# ESPResSo simulación
-system = espressomd.System(box_l=[50.0,50.0,50.0])
-# ... simulación ...
-
-# Exportar a VMD (formato MDAnalysis)
-system.part.writevmd("trayectoria.vmd")
-u = mda.Universe("trayectoria.vmd")  # Análisis RMSD, RDF, etc.
-```
-
-## **2. PyMOL / VMD (Visualización 3D)**
-
-ESPResSo exporta **VMD** y **PDB** nativamente:
-```python
-system.part.writepdb("snap_001.pdb")  # PyMOL/VMD directo
-system.part.writevmd("membrana.vmd")  # Trayectorias completas
-```
-
-## **3. GROMACS / LAMMPS (Híbridos)**
-
-**Coarse-graining híbrido**: ESPResSo simula membranas/polímeros → átomos mapeados a GROMACS:
-
-```python
-# ESPResSo: membrana coarse-grained
-system.actors.add(espressomd.polymers.Polymer()) 
-
-# Exportar beads → GROMACS topology
-beads_pos = system.part[:].pos  # → MARTINI mapping
-np.savetxt("cg2aa_mapping.dat", beads_pos)
-```
-
-## **4. Biofísica Molecular Avanzada**
-
-| Software | Integración | Aplicación |
-|----------|-------------|------------|
-| **pDynamo** | Coordenadas XYZ | Reacciones QC/MM en polímeros |
-| **OpenMM** | Campos de fuerza | Validación cross-engine |
-| **HOOMD-blue** | GPU coloides | Benchmarking rendimiento |
-
-## **5. Pipeline Completo Biofísica**
-
-```
-ESPResSo (simulación CG) 
-    ↓ VMD/PDB
-MDAnalysis (RMSD, contactos) 
-    ↓ Python
-PyMOL (visualización)
-    ↓ Análisis
-Publicación (figuras)
-```
-
-## **6. Ejemplo Práctico: Membrana + MDAnalysis**
-
-```python
-import espressomd
-import MDAnalysis as mda
-import numpy as np
-
-# 1. ESPResSo: Autoensamblaje membrana
-system = espressomd.System(box_l=[32,32,100])
-system.non_bonded_inter[0,0].lennard_jones.set_params(
-    epsilon=1.0, sigma=1.0, cutoff=2.5, shift="auto")
-
-# Lipidos coarse-grained
-lipids = espressomd.polymers.LinearPolymer()
-system.actors.add(lipids)
-
+system = espressomd.System(box_l=[32.0, 32.0, 100.0])
 system.time_step = 0.01
-system.thermostat.set_langevin(kT=1.0, gamma=1.0)
+system.cell_system.skin = 0.4
+
+# Definir un tipo de enlace armónico para la cadena
+from espressomd.interactions import HarmonicBond
+bond = HarmonicBond(k=10.0, r_0=1.0)
+system.bonded_inter.add(bond)
+
+# Construir una cadena lineal de 20 beads
+n_monomeros = 20
+for i in range(n_monomeros):
+    system.part.add(pos=[16.0, 16.0, i * 1.0], type=0)
+    if i > 0:
+        system.part[i].add_bond((bond, i - 1))
+
+# Interacción no enlazada tipo Lennard-Jones
+system.non_bonded_inter[0, 0].lennard_jones.set_params(
+    epsilon=1.0, sigma=1.0, cutoff=2.5, shift="auto"
+)
+
+# Termostato de Langevin — 'seed' es obligatorio desde ESPResSo 4.x
+system.thermostat.set_langevin(kT=1.0, gamma=1.0, seed=42)
+
 system.integrator.run(10000)
-
-# 2. Exportar trayectoria
-system.part.writevmd("membrana.vmd")
-
-# 3. MDAnalysis: Orden de membrana
-u = mda.Universe("membrana.vmd")
-leaflets = u.select_atoms("type 1")  # heads
-order_param = np.mean(np.cos(u.atoms.angle_icosahedron()))
-
-print(f"Parámetro de orden: {order_param:.3f}")
 ```
 
-## **7. Workflows Automatizados**
+`system.actors` queda reservado para solvers físicos (P3M para electrostática, Lattice-Boltzmann, magnetostática), no para topología molecular.
 
-**Script maestro biofísica**:
+## Integración con MDAnalysis (flujo correcto)
+
+El README original planteaba escribir un archivo y luego leerlo con `mda.Universe(...)`. La documentación oficial de ESPResSo describe algo más directo: la clase **`espressomd.MDA_ESP`** expone los datos de partículas de ESPResSo como un *stream* que MDAnalysis puede leer **en memoria**, sin pasar por un archivo intermedio:
+
 ```python
-# Pipeline completo
-for density in np.logspace(-3, -1, 5):
-    sim = run_espresso_polymer(density)  # ESPResSo
-    traj = mda.Universe(sim.export_vmd())  # MDAnalysis  
-    rg = traj.atoms.radius_of_gyration()
-    plt.plot(density, rg, 'o-')
-plt.savefig("scaling.png")
+import espressomd
+from espressomd import MDA_ESP
+import MDAnalysis as mda
+
+system = espressomd.System(box_l=[32.0, 32.0, 100.0])
+# ... construir el sistema y correr la simulación ...
+
+eos = MDA_ESP.Stream(system)
+u = mda.Universe(eos.topology, eos.trajectory)
+
+# Análisis normal de MDAnalysis sobre el sistema de ESPResSo
+backbone = u.select_atoms("type 0")
+rg = backbone.radius_of_gyration()
+print(f"Radio de giro: {rg:.3f}")
 ```
 
-## **Ventajas de la Integración**
+Este camino evita el problema de fondo del README original: no hay ningún "formato VMD" que MDAnalysis pueda leer directamente (VMD es el nombre del *programa* de visualización, no un formato de archivo).
 
-| Aspecto | Beneficio |
-|---------|-----------|
-| **Python nativo** | Sin formatos intermedios |
-| **Trayectorias VMD** | MDAnalysis/PyMOL directo |
-| **Modular** | Mezclar engines (ESPResSo membranas + GROMACS proteína) |
-| **Análisis online** | NumPy/Matplotlib durante simulación |
-| **Reproducible** | Scripts completos → paper |
+## Exportar a VMD/PyMOL (formato VTF)
 
-## **Herramientas Complementarias Recomendadas**
+Si el objetivo es visualizar en VMD (o convertir para PyMOL), el formato correcto es **VTF** (VTF/VSF/VCF — *VTF Structure/Coordinate Format*), escrito a un descriptor de archivo abierto, no con un método `writevmd()` sobre `system.part` (que no existe):
 
+```python
+from espressomd.io.writer import vtf
+
+fp = open("trayectoria.vtf", mode="w+t")
+vtf.writevsf(system, fp)   # bloque de topología, una sola vez
+for i in range(100):
+    system.integrator.run(100)
+    vtf.writevcf(system, fp)  # bloque de coordenadas, cada frame
+fp.close()
 ```
-ESPResSo + MDAnalysis + PyMOL + Jupyter
-    ↓
-Simulación → Análisis → Visualización → Paper
+
+ESPResSo tampoco tiene un escritor nativo de PDB colgado de `system.part`; para obtener PDB, el camino soportado es pasar por MDAnalysis (vía `MDA_ESP`) y usar sus métodos de escritura (`AtomGroup.write("archivo.pdb")`).
+
+## Integración con otro software de simulación
+
+| Software | Vía de integración | Uso típico |
+|---|---|---|
+| GROMACS | Exportar coordenadas/topología vía MDAnalysis | Validación cruzada, mapeo CG↔atomístico |
+| LAMMPS | Formatos de coordenadas compartidos (XYZ) | Benchmarking, comparación de coloides |
+| OpenMM | Sin puente directo; se comparan resultados a nivel de trayectoria/observables | Validación cross-engine |
+| HOOMD-blue | Sin puente directo; ambos son motores GPU para materia blanda | Benchmarking de rendimiento |
+
+A diferencia de lo que sugiere un README que promete "puentes nativos" hacia todo, en la práctica la mayoría de estas integraciones pasan por **MDAnalysis como capa común**, no por exportadores directos entre motores.
+
+## Pipeline: simulación → análisis → visualización
+
+```python
+import espressomd
+from espressomd import MDA_ESP
+import MDAnalysis as mda
+from MDAnalysis.analysis import rms
+
+# 1. Simulación en ESPResSo (ver sección anterior para construir el sistema)
+system = espressomd.System(box_l=[32.0, 32.0, 100.0])
+# ... construir sistema, correr integrator ...
+
+# 2. Puente a MDAnalysis en memoria
+eos = MDA_ESP.Stream(system)
+u = mda.Universe(eos.topology, eos.trajectory)
+
+# 3. Análisis
+R = rms.RMSD(u, select="type 0").run()
+
+# 4. Exportar el frame final como PDB para visualizar en PyMOL/VMD
+u.atoms.write("frame_final.pdb")
 ```
 
-**ESPResSo es el "pegamento perfecto" para workflows complejos en materia blanda y biofísica**, conectando simulación física rigurosa con análisis estadístico avanzado y visualización profesional.
+```python
+# 5. Visualización en PyMOL
+from pymol import cmd
+cmd.load("frame_final.pdb", "sistema")
+cmd.show("spheres", "sistema")
+cmd.zoom()
+cmd.png("figura.png", dpi=300)
+```
 
-[1](https://www.mdanalysis.org/pages/learning_MDAnalysis/)
-[2](https://www.youtube.com/watch?v=njzoNzOwR78)
-[3](https://www.youtube.com/playlist?list=PLhYF9QNr23Iaw29UfuTjHUnkViwW_vbjV)
-[4](https://www.youtube.com/watch?v=p3OUUnHXQjU)
-[5](https://userguide.mdanalysis.org/1.0.0/examples/quickstart.html)
-[6](https://github.com/simongravelle/MDAnalysis-tutorial/blob/main/tutorial/mdanalysis-tutorial.rst)
-[7](https://www.youtube.com/watch?v=1Wot83DSt4E)
-[8](https://www.mdanalysis.org/pages/getting_started/)
-[9](https://www.youtube.com/watch?v=3zKBjnRnAMg)
-[10](https://github.com/MDAnalysis/MDAnalysisWorkshop-Intro0.5Day)
+## Ventajas y limitaciones
+
+| Aspecto | Detalle |
+|---|---|
+| Interfaz Python | Scripts reproducibles, sin archivos de entrada rígidos |
+| Rendimiento | Paralelización MPI y soporte GPU (CUDA) para ciertos métodos |
+| Instalación | Requiere compilación con CMake; no hay `pip install espressomd` simple |
+| Integración con análisis | El puente documentado y soportado es `MDA_ESP` hacia MDAnalysis, no exportadores directos a otros motores |
+| Exportación para visualización | Formato nativo es VTF (VMD); PDB se obtiene indirectamente vía MDAnalysis |
+
+## Referencias
+
+- Documentación oficial: https://espressomd.github.io/doc/
+- Instalación: https://espressomd.github.io/doc/installation.html
+- Entrada/Salida (formatos VTF, puente `MDA_ESP`): https://espressomd.github.io/doc/io.html
+- Repositorio: https://github.com/espressomd/espresso
+- Documentación de MDAnalysis: https://docs.mdanalysis.org
