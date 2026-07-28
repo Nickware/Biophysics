@@ -1,86 +1,47 @@
 # Biofísica
 
-La **biofísica** es una ciencia interdisciplinaria que aplica los principios y métodos de la física para estudiar los sistemas y procesos biológicos en todos los niveles, desde lo molecular hasta lo ecológico. Busca explicar cómo funcionan los organismos vivos utilizando leyes físicas, modelos matemáticos y técnicas experimentales precisas. Entre sus áreas de estudio principales se encuentran la estructura y función de las proteínas, membranas biológicas, dinámica molecular, bioenergética, biomecánica y bioelectromagnetismo, entre otras[^2][^3][^4].
+La **biofísica** es una ciencia interdisciplinaria que aplica los principios y métodos de la física para estudiar los sistemas y procesos biológicos en todos los niveles, desde lo molecular hasta lo ecológico. Busca explicar cómo funcionan los organismos vivos utilizando leyes físicas, modelos matemáticos y técnicas experimentales precisas. Entre sus áreas de estudio principales se encuentran la estructura y función de las proteínas, membranas biológicas, dinámica molecular, bioenergética, biomecánica y bioelectromagnetismo, entre otras.[^1][^2]
 
-## Biofísica y la Simulación Computacional
+Este repositorio reúne herramientas computacionales usadas en biofísica molecular. Este documento es el índice: describe brevemente cada herramienta y su rol en el flujo de trabajo, y enlaza al README dedicado de cada una, donde vive el detalle técnico (instalación, API verificada, ejemplos).
 
-La biofísica moderna saca enorme provecho de la simulación y el análisis computacional para comprender mecanismos complejos, como el plegamiento de proteínas, interacciones entre biomoléculas, dinámica de membranas y mecanismos enzimáticos. A continuación se explica cómo algunas herramientas computacionales complementan este objetivo:
+## Biofísica y la simulación computacional
 
----
-
-## Herramientas Computacionales Relacionadas
-
-| Herramienta   | Descripción breve | Relación con la biofísica |
-|---------------|------------------|---------------------------|
-| **ESPResSo/expressomd** | Paquete de simulación de dinámica molecular (MD) para sistemas de materia blanda, como polímeros, coloides y biomoléculas. | Permite modelar y analizar sistemas biológicos de modo “coarse-grained” o de grano grueso (por ejemplo, membranas, DNA, proteínas), proporcionando información sobre procesos físicos y propiedades emergentes en biología molecular[^12]. |
-| **MMTK**       | Toolkit de modelado molecular en Python para simulaciones y estudios de sistemas moleculares. Soporta integraciones personalizadas y nuevos algoritmos. | Usado para simular sistemas biomoleculares, modelar el comportamiento dinámico de proteínas, ácidos nucleicos o membranas, permitiendo responder preguntas clave sobre dinámica, energía y estructura molecular en sistemas biológicos[^7]. |
-| **MDAnalysis** | Librería en Python para analizar trayectorias de dinámica molecular generadas por múltiples motores de simulación (GROMACS, NAMD, AMBER, etc.). | Ayuda a extraer, cuantificar y visualizar propiedades físicas que describen la dinámica y estructura de biomoléculas simuladas, habilitando estudios de conformación, difusión, interacciones intermoleculares y otros procesos de interés en biofísica[^8][^14]. |
-| **pDynamo**    | Biblioteca open-source para simulaciones de sistemas moleculares usando funciones de energía de química cuántica, mecánica molecular y combinadas (QC/MM). | Permite modelar reacciones químicas enzimáticas y procesos biológicos a nivel atómico, integrando técnicas mecánico-cuánticas y clásicas. Muy útil en biofísica computacional de proteínas, catálisis, mutaciones, análisis de rutas de reacción, etc.[^9][^15]. |
-| **PyMOL**      | Software popular para la visualización y análisis 3D de estructuras moleculares. | Indispensable en biofísica estructural para visualizar proteínas, ácidos nucleicos y complejos moleculares. Facilita la interpretación de datos experimentales y simulaciones, y la presentación de resultados en imágenes de alta calidad[^10][^16]. |
+La biofísica moderna saca enorme provecho de la simulación y el análisis computacional para comprender mecanismos complejos, como el plegamiento de proteínas, interacciones entre biomoléculas, dinámica de membranas y mecanismos enzimáticos. Las herramientas de este repositorio complementan ese objetivo desde tres roles distintos: **simulación**, **análisis** y **visualización**.
 
 ---
 
-## Investigación Biofísica
+## Herramientas del repositorio
 
-Estas herramientas suelen emplearse de manera conjunta en investigaciones biofísicas:
-
-- **Simulación:** El modelado y la simulación (con expressomd, MMTK, pDynamo) permiten predecir movimientos y cambios de estado de las moléculas biológicas.
-- **Análisis:** MDAnalysis procesa y cuantifica los datos de simulación, extrayendo información clave (ej. variaciones estructurales, contactos atómicos, fluctuaciones).
-- **Visualización:** PyMOL traduce los resultados en representaciones 3D, siendo esencial para el análisis visual y la comunicación científica.
-
-De esta forma, la biofísica computacional aprovecha estas plataformas para investigar procesos moleculares imposibles de observar directamente y para testar hipótesis en un entorno controlado antes de experimentos in vitro o in vivo.
+| Herramienta | Descripción breve | Relación con la biofísica | Documentación |
+|---|---|---|---|
+| **ESPResSo** (`espressomd`) | Motor de dinámica molecular (MD) para sistemas de materia blanda: polímeros, coloides y biomoléculas coarse-grained. | Permite modelar sistemas biológicos "de grano grueso" (membranas, ADN, proteínas), dando información sobre procesos físicos y propiedades emergentes en biología molecular.[^3] | [`/espressomd/README.md`](./espressomd/README.md) |
+| **MDAnalysis** | Librería en Python para analizar trayectorias de dinámica molecular de múltiples motores de simulación (GROMACS, NAMD, AMBER, entre otros). | Extrae, cuantifica y visualiza propiedades físicas de biomoléculas simuladas: conformación, difusión, interacciones intermoleculares.[^4] | [`/mdanalysis/README.md`](./mdanalysis/README.md) |
+| **PyMOL** | Software de visualización y análisis 3D de estructuras moleculares. | Indispensable en biofísica estructural para visualizar proteínas, ácidos nucleicos y complejos moleculares, y para producir figuras de resultados.[^5] | [`/pymol/README.md`](./pymol/README.md) |
+| **MMTK** (Molecular Modelling Toolkit) | Biblioteca en Python para simulación molecular: dinámica molecular, minimización de energía, análisis de modos normales, con varios campos de fuerza para biomoléculas (Amber 94/99, modelos de red elástica). | Simula el comportamiento dinámico de proteínas, ácidos nucleicos y membranas para responder preguntas de dinámica, energía y estructura.[^6] | *(sin README dedicado en este repositorio todavía)* |
+| **pDynamo** | Biblioteca open-source para simulaciones con funciones de energía de química cuántica, mecánica molecular y combinadas (QC/MM). | Modela reacciones químicas enzimáticas a nivel atómico, combinando técnicas cuánticas y clásicas: catálisis, mutaciones, rutas de reacción.[^7] | *(sin README dedicado en este repositorio todavía)* |
 
 ---
+
+## Cómo se combinan en una investigación
+
+- **Simulación:** ESPResSo, MMTK y pDynamo generan trayectorias y predicen movimientos y cambios de estado de las moléculas.
+- **Análisis:** MDAnalysis procesa esas trayectorias y extrae información cuantitativa (variaciones estructurales, contactos atómicos, fluctuaciones).
+- **Visualización:** PyMOL traduce los resultados en representaciones 3D para el análisis visual y la comunicación científica.
+
+Para ejemplos de código verificados sobre cómo conectar estas herramientas entre sí (por ejemplo, el puente correcto `espressomd.MDA_ESP` entre ESPResSo y MDAnalysis, o el flujo MDAnalysis → PyMOL para figuras), ver la sección de integración dentro de cada README dedicado — no se duplica aquí para evitar que el código quede desactualizado en dos lugares a la vez.
+
+---
+
+## Nota sobre esta revisión
+
+Una versión anterior de este README citaba, bajo la fila de MMTK, dos referencias (`mmtk.io` y `github.com/mmtk/mmtk-core`) que en realidad corresponden a un proyecto homónimo no relacionado: **"MMTk" (Memory Management Toolkit)**, un framework de investigación en recolección de basura para runtimes de lenguajes de programación (usado, por ejemplo, en el compilador de Rust), sin relación con simulación molecular. Se corrigió para apuntar únicamente a la fuente correcta del MMTK de biofísica. También se retiraron dos referencias sin relación real con el software (dominios que solo coincidían en la palabra "espresso"), y se corrigió la ortografía de `espressomd` (no "expressomd") en toda la tabla.
 
 ## Referencias
 
-- [^2] Biofísica - Wikipedia, la enciclopedia libre.
-- [^3] ¿Qué es la Biofísica?.
-- [^4] Biofísica: qué es, áreas de estudio y aplicaciones - Ferrovial.
-- [^7] The Molecular Modeling Toolkit.
-- [^8] MDAnalysis · MDAnalysis.
-- [^9][^15] pDynamo.
-- [^10][^16] PyMOL - Wikipedia.
-- [^12] ESPResSo » Extensible Simulation Package for the Research on Soft Matter.
-- [^14] MDAnalysis documentation — MDAnalysis 2.10.0-dev0.
-
-[^1]: https://universidadeuropea.com/blog/que-es-biofisica/
-
-[^2]: https://es.wikipedia.org/wiki/Biofísica
-
-[^3]: https://biofisica.org.ar/quienes-somos/que-es-la-biofisica/
-
-[^4]: https://www.ferrovial.com/es/stem/biofisica/
-
-[^5]: https://concepto.de/biofisica/
-
-[^6]: https://www.expresso-app.org
-
-[^7]: http://dirac.cnrs-orleans.fr/MMTK.html
-
-[^8]: https://www.mdanalysis.org
-
-[^9]: https://www.pdynamo.org
-
-[^10]: https://en.wikipedia.org/wiki/PyMOL
-
-[^11]: https://www.cun.es/diccionario-medico/terminos/biofisica
-
-[^12]: https://espressomd.org/wordpress/
-
-[^13]: https://www.mmtk.io
-
-[^14]: https://mdanalysis.readthedocs.io
-
-[^15]: https://github.com/pdynamo/pDynamo3
-
-[^16]: https://es.wikipedia.org/wiki/PyMOL
-
-[^17]: https://editorial.uninorte.edu.co/gpd-fundamentos-de-biofisica-medica.html
-
-[^18]: https://espressomoon.com
-
-[^19]: https://github.com/mmtk/mmtk-core
-
-[^20]: https://github.com/MDAnalysis/mdanalysis
-
+[^1]: Biofísica - Wikipedia, la enciclopedia libre. https://es.wikipedia.org/wiki/Biofísica
+[^2]: Biofísica: qué es, áreas de estudio y aplicaciones - Ferrovial. https://www.ferrovial.com/es/stem/biofisica/
+[^3]: ESPResSo » Extensible Simulation Package for the Research on Soft Matter. https://espressomd.org/wordpress/
+[^4]: MDAnalysis. https://www.mdanalysis.org
+[^5]: PyMOL - Wikipedia. https://en.wikipedia.org/wiki/PyMOL
+[^6]: The Molecular Modelling Toolkit. http://dirac.cnrs-orleans.fr/MMTK.html
+[^7]: pDynamo. https://www.pdynamo.org
