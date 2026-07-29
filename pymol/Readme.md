@@ -23,26 +23,63 @@ Fue creado en el año 2000 por **Warren Lyford DeLano**, quien fundó DeLano Sci
 
 **Versión open-source, vía conda (recomendada para uso académico sin licencia):**
 
+`pymol-bundle` solo publica builds para Python 3.9–3.12. Si tu entorno `base` de conda está fijado a otra versión (por ejemplo Python 3.13, algo común en instalaciones recientes de Anaconda/Miniforge), el solver falla con un `LibMambaUnsatisfiableError` porque no puede satisfacer esa versión de Python junto con los requisitos de `pymol-bundle` — no es un problema del paquete, es un choque de versión de Python en el entorno donde intentas instalarlo.
+
+La solución es **no instalarlo en `base`**, sino crear un entorno dedicado con una versión de Python compatible:
+
 ```bash
-conda install -c conda-forge -c schrodinger pymol-bundle
+conda create -n pymol-env -c conda-forge -c schrodinger python=3.12 pymol-bundle
+conda activate pymol-env
+```
+
+Si el solver por defecto (`classic`) es muy lento, usa `mamba` (normalmente ya viene con `libmamba` como solver por defecto en conda ≥23.10):
+
+```bash
+conda install -n base conda-libmamba-solver
+conda create -n pymol-env -c conda-forge -c schrodinger python=3.12 pymol-bundle --solver=libmamba
 ```
 
 **Versión con licencia (incentive build):** se descarga desde `pymol.org`, requiere una clave de licencia de Schrödinger tras el periodo de prueba.
 
-**Verificar la instalación:**
+**Verificar la instalación (con el entorno `pymol-env` activo):**
 
 ```bash
 pymol -cq -d "print(cmd.get_version())"
 ```
+
+### Alternativa: Distrobox con Debian (vía `apt`)
+
+Si el canal de `schrodinger` en conda te da paquetes con dependencias de librerías compartidas mal declaradas (por ejemplo, un `ImportError` de una `.so` que el propio paquete debería haber traído), la ruta más simple es instalar PyMOL desde los repositorios de Debian dentro de un contenedor Distrobox — el mismo patrón que usamos para ESPResSo:
+
+```bash
+distrobox create --name pymol-dev --image debian:trixie
+distrobox enter pymol-dev
+
+sudo apt update
+sudo apt install -y pymol
+```
+
+**Verificar:**
+
+```bash
+pymol -cq -d "print(cmd.get_version())"
+```
+
+Esta build viene de los repositorios de Debian, no del canal de Schrödinger, así que corresponde a la versión **open-source** de PyMOL (sin `morph` ni otras funciones de la versión con licencia), pero evita por completo los problemas de resolución de dependencias del canal de conda.
 
 ## API Python nativa
 
 ```python
 from pymol import cmd
 
-# Cargar estructuras
-cmd.load("protein.pdb", "prot")
-cmd.load("ligand.mol2", "lig")
+# Descargar un complejo real desde la RCSB PDB: 3PTB = tripsina bovina
+# con el inhibidor benzamidina (código de residuo BEN) ya presente en el
+# mismo archivo — no hay que inventar un .mol2 aparte para el ligando.
+cmd.fetch("3ptb", "complejo", type="pdb")
+
+# Separar receptor y ligando en objetos distintos a partir del complejo descargado
+cmd.create("prot", "complejo and polymer.protein")
+cmd.create("lig", "complejo and resn BEN")
 
 # Selección y representación
 cmd.select("active_site", "prot within 5 of lig")
@@ -55,6 +92,8 @@ cmd.bg_color("white")
 cmd.ray(1200, 900)
 cmd.png("figura.png", dpi=300)
 ```
+
+`polymer.protein` es un selector de PyMOL que toma solo la cadena polipeptídica (excluye agua, iones y el propio ligando); `resn BEN` aísla la benzamidina por su código de residuo de tres letras tal como aparece en el archivo de la PDB.
 
 ## Lenguaje de selección
 
@@ -93,6 +132,16 @@ PyMOL no lee directamente todos los formatos de trayectoria de cada motor de sim
 Un patrón real y verificable para combinar MDAnalysis (análisis numérico) con PyMOL (visualización), sin inventar módulos que no existen en la API pública de MDAnalysis:
 
 ```python
+from pymol import cmd
+
+# 0. Obtener una topología real como punto de partida (en vez de asumir
+#    que ya existe un prot.pdb local): descargar 3PTB y quedarnos solo
+#    con la proteína, sin agua ni el ligando de cristalización.
+cmd.fetch("3ptb", "complejo", type="pdb")
+cmd.save("prot.pdb", "complejo and polymer.protein")
+```
+
+```python
 import MDAnalysis as mda
 from MDAnalysis.analysis import rms
 import numpy as np
@@ -100,6 +149,8 @@ from scipy.cluster.hierarchy import linkage, fcluster
 from scipy.spatial.distance import squareform
 
 # 1. Cargar trayectoria y calcular RMSD respecto al primer frame
+#    (prot.pdb = topología real obtenida en el paso 0; traj.dcd = tu propia
+#    trayectoria de dinámica molecular, por ejemplo generada con GROMACS/NAMD)
 u = mda.Universe("prot.pdb", "traj.dcd")
 backbone = u.select_atoms("backbone")
 
